@@ -41,6 +41,11 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Verify ECR login
+        run: |
+          aws ecr describe-repositories
+
+
       - name: Deploy staging with push to ECR
         if: ${{ inputs.environment }} == 'Staging'
         id: push
