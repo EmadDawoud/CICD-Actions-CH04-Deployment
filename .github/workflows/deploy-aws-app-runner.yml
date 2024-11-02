@@ -45,6 +45,10 @@ jobs:
         run: |
           aws ecr describe-repositories
 
+      - name: Manual ECR Login (Debugging)
+        run: |
+          aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+
 
       - name: Deploy staging with push to ECR
         if: ${{ inputs.environment }} == 'Staging'
