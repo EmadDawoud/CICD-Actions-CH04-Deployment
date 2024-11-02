@@ -41,6 +41,7 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      #The following 2 steps are for debugging purpose only
       - name: Verify ECR login
         run: |
           aws ecr describe-repositories
@@ -49,7 +50,7 @@ jobs:
         run: |
           echo "Logging into ECR..."
           aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
-
+      #Debuging stesps ended 
 
       - name: Deploy staging with push to ECR
         if: ${{ inputs.environment }} == 'Staging'
@@ -57,11 +58,13 @@ jobs:
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ github.event.repository.name }}
-
+          
+          # Debuggin Procedures begin
           echo "AWS Account Number: ${{ secrets.AWS_ACCOUNT_NUMBER }}"
           echo "AWS Region: ${{ vars.AWS_REGION }}"
           echo "ECR URL: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ github.event.repository.name }}"
-         
+          #Debugging procedures ends
+          
           docker push ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ github.event.repository.name }}
 
       - name: Deploy production with aws CLI
